@@ -7,6 +7,7 @@ from typing import Optional
 import logging
 logger = logging.getLogger(__name__)
 
+
 class TaskBase:
 
     @abc.abstractmethod
@@ -87,18 +88,16 @@ class LoginToVf(TaskBase):
             return False
 
 
-class DropdownChange(TaskBase):
+class ComboboxChange(TaskBase):
 
-    def __init__(self, **kwargs):
-        self.webdriver = kwargs["webdriver"]
-        self.value = kwargs["value"]
+    def __init__(self, webdriver: webdriver, changeUrl: str, cmbxHtmlName: str,
+                 cmbxTextValue: str, saveButtonName: str = "submit_"):
+        self.webdriver = webdriver
+        self.cmbxTextValue = cmbxTextValue
         # this is the html name property for the custom property drop down (on editfunctions.php)
-        self.htmlSelector = kwargs["htmlSelector"]
-        self.changeUrl = kwargs["changeUrl"]
-        if "saveButtonName" not in kwargs:
-            self.saveButtonName = "submit_"
-        else:
-            self.saveButtonName = kwargs["saveButtonName"]
+        self.htmlSelector = cmbxHtmlName
+        self.changeUrl = changeUrl
+        self.saveButtonName = saveButtonName
 
     def execute(self) -> bool:
         driver = self.webdriver
@@ -107,8 +106,8 @@ class DropdownChange(TaskBase):
             driver.get(self.changeUrl)
 
             # get dropdown element and select club
-            selector = Select(driver.find_element_by_name(self.htmlSelector))
-            selector.select_by_visible_text(self.value)
+            selector = Select(driver.find_element_by_name(self.cmbxHtmlName))
+            selector.select_by_visible_text(self.cmbxTextValue)
 
             # hit the save button
             driver.find_element_by_name(self.saveButtonName).click()
@@ -121,7 +120,7 @@ class DropdownChange(TaskBase):
             return False
 
 
-class ChangeUserClubProperty(DropdownChange):
+class ChangeUserClubProperty(ComboboxChange):
 
     def __init__(self, webdriver: webdriver, uid: str, flightClub: str, customPropertyNo: int = 1):
         '''
@@ -131,11 +130,11 @@ class ChangeUserClubProperty(DropdownChange):
         url = f"https://vereinsflieger.de/member/community/editfunctions.php?uid={uid}"
         super().__init__(webdriver=webdriver,
                          changeUrl=url,
-                         value=flightClub,
-                         htmlSelector=f"suc_prop_512_{customPropertyNo}")
+                         cmbxTextValue=flightClub,
+                         cmbxHtmlName=f"suc_prop_512_{customPropertyNo}")
 
 
-class ChangeUserStatus(DropdownChange):
+class ChangeUserStatus(ComboboxChange):
 
     def __init__(self, webdriver: webdriver, uid: str, statusName: str):
         '''
@@ -145,6 +144,6 @@ class ChangeUserStatus(DropdownChange):
         url = f"https://vereinsflieger.de/member/community/editcommunity.php?uid={uid}"
         super().__init__(webdriver=webdriver,
                          changeUrl=url,
-                         value=statusName,
-                         htmlSelector=f"frm_msid")
+                         cmbxTextValue=statusName,
+                         cmbxHtmlName=f"frm_msid")
 
