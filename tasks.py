@@ -14,10 +14,6 @@ class TaskBase:
     def execute(self) -> bool:
         pass
 
-    @property
-    def permutable(self) -> bool:
-        return True
-
 
 class LoginToVf(TaskBase):
 
@@ -32,10 +28,6 @@ class LoginToVf(TaskBase):
             raise Exception("Execute LoginToVf task first!")
 
         return self._webdriver
-
-    @property
-    def permutable(self) -> bool:
-        return False
 
     # NOTE candidate for global utility
     @staticmethod
