@@ -83,13 +83,12 @@ class LoginToVf(TaskBase):
 class ComboboxChange(TaskBase):
 
     def __init__(self, webdriver: webdriver, changeUrl: str, cmbxHtmlName: str,
-                 cmbxTextValue: str, saveButtonName: str = "submit_"):
+                 cmbxTextValue: str):
         self.webdriver = webdriver
         self.cmbxTextValue = cmbxTextValue
         # this is the html name property for the custom property drop down (on editfunctions.php)
-        self.htmlSelector = cmbxHtmlName
+        self.cmbxHtmlName = cmbxHtmlName
         self.changeUrl = changeUrl
-        self.saveButtonName = saveButtonName
 
     def execute(self) -> bool:
         driver = self.webdriver
@@ -98,11 +97,12 @@ class ComboboxChange(TaskBase):
             driver.get(self.changeUrl)
 
             # get dropdown element and select club
-            selector = Select(driver.find_element_by_name(self.cmbxHtmlName))
+            combobox = driver.find_element_by_name(self.cmbxHtmlName)
+            selector = Select(combobox)
             selector.select_by_visible_text(self.cmbxTextValue)
 
-            # hit the save button
-            driver.find_element_by_name(self.saveButtonName).click()
+            # hit the submit method on elements lets silenumn walk up the DOM to the form element and submit it
+            combobox.submit()
 
             # TODO implement a checker for valid input (may make use of JS function: checkMandatory())
             return True
