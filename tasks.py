@@ -20,11 +20,10 @@ class TaskBase:
 
 class LoginToVf(TaskBase):
 
-    def __init__(self, headlessMode: bool, user: str, passwd: str):
+    def __init__(self, headlessMode: bool, credentialFile: str = "vf_login_credentials.txt"):
         self.headlessMode = False
-        self.user = user
-        self.passwd = passwd
         self._webdriver = None
+        self.credentialFile = credentialFile
 
     @property
     def webdriver(self) -> webdriver:
@@ -36,6 +35,24 @@ class LoginToVf(TaskBase):
     @property
     def permutable(self) -> bool:
         return False
+
+    # NOTE candidate for global utility
+    @staticmethod
+    def get_user_and_passwd_from_file(fileName: str) -> (str, str):
+        user = None
+        pwd = None
+        with open(fileName, 'r') as f:
+            # first line:
+            user = f.readline()
+            # second line:
+            pwd = f.readline()
+
+        # error check
+        if len(user) == 0 or len(pwd) == 0:
+            raise Exception(f"Crendential file '{fileName}' must contain a user "
+                            "in the first line and password in the second line")
+
+        return (user, pwd)
 
     def execute(self) -> bool:
         profile = webdriver.FirefoxProfile()
@@ -58,8 +75,9 @@ class LoginToVf(TaskBase):
                 pass
 
             # login
-            driver.find_element_by_name("user").send_keys(self.user)
-            driver.find_element_by_name("pwinput").send_keys(self.passwd)
+            (user, pwd) = type(self).get_user_and_passwd_from_file(self.credentialFile)
+            driver.find_element_by_name("user").send_keys(user)
+            driver.find_element_by_name("pwinput").send_keys(pwd)
             driver.find_element_by_name("submit").click()
 
             return True

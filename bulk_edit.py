@@ -5,9 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 if __name__ == '__main__':
-    login = tasks.LoginToVf(headlessMode=False,
-                            user="",
-                            passwd="")
+    login = tasks.LoginToVf(headlessMode=False)
 
     login.execute()
     driver = login.webdriver
