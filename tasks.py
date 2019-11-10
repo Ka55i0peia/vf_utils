@@ -87,31 +87,31 @@ class LoginToVf(TaskBase):
             return False
 
 
-class ChangeUserProperty(TaskBase):
+class DropdownChangeBase(TaskBase):
 
-    def __init__(self, webdriver: webdriver, uid: str, flightClub: str, customPropertyNo: int = 1):
-        '''
-        `ui` user to edit
-        `flightClub` custom property value to set (by string representation)
-        '''
-        self.webdriver = webdriver
-        self.uid = uid
-        self.flightClub = flightClub
+    def __init__(self, **kwargs):
+        self.webdriver = kwargs["webdriver"]
+        self.value = kwargs["value"]
         # this is the html name property for the custom property drop down (on editfunctions.php)
-        self.customPropertySelector = f"suc_prop_512_{customPropertyNo}"
+        self.htmlSelector = kwargs["htmlSelector"]
+        self.changeUrl = kwargs["changeUrl"]
+        if "saveButtonName" not in kwargs:
+            self.saveButtonName = "submit_"
+        else:
+            self.saveButtonName = kwargs["saveButtonName"]
 
     def execute(self) -> bool:
         driver = self.webdriver
         # TODO move this common exception handling to an annotation (follow aspect oriented programming)
         try:
-            driver.get(f"https://vereinsflieger.de/member/community/editfunctions.php?uid={self.uid}")
+            driver.get(self.changeUrl)
 
             # get dropdown element and select club
-            selector = Select(driver.find_element_by_name(self.customPropertySelector))
-            selector.select_by_visible_text(self.flightClub)
+            selector = Select(driver.find_element_by_name(self.htmlSelector))
+            selector.select_by_visible_text(self.value)
 
             # hit the save button
-            driver.find_element_by_name("submit_").click()
+            driver.find_element_by_name(self.saveButtonName).click()
 
             # TODO implement a checker for valid input (may make use of JS function: checkMandatory())
             return True
@@ -119,3 +119,17 @@ class ChangeUserProperty(TaskBase):
             logger.error(ex)
             logger.debug("Trace:\n", exc_info=ex)
             return False
+
+
+class ChangeUserProperty(DropdownChangeBase):
+
+    def __init__(self, webdriver: webdriver, uid: str, flightClub: str, customPropertyNo: int = 1):
+        '''
+        `ui` user to edit
+        `flightClub` custom property value to set (by string representation)
+        '''
+        super().__init__(webdriver=webdriver,
+                         changeUrl=f"https://vereinsflieger.de/member/community/editfunctions.php?uid={uid}",
+                         value=flightClub,
+                         htmlSelector=f"suc_prop_512_{customPropertyNo}")
+
