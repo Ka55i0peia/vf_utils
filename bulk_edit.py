@@ -10,5 +10,5 @@ if __name__ == '__main__':
     login.execute()
     driver = login.webdriver
 
-    changeUser = tasks.ChangeUserProperty(driver, uid="249109", flightClub="Bünde")
+    changeUser = tasks.ChangeUserStatus(driver, uid="249109", statusName="Ordentliches Mitglied")
     changeUser.execute()

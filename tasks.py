@@ -87,7 +87,7 @@ class LoginToVf(TaskBase):
             return False
 
 
-class DropdownChangeBase(TaskBase):
+class DropdownChange(TaskBase):
 
     def __init__(self, **kwargs):
         self.webdriver = kwargs["webdriver"]
@@ -121,15 +121,30 @@ class DropdownChangeBase(TaskBase):
             return False
 
 
-class ChangeUserProperty(DropdownChangeBase):
+class ChangeUserClubProperty(DropdownChange):
 
     def __init__(self, webdriver: webdriver, uid: str, flightClub: str, customPropertyNo: int = 1):
         '''
         `ui` user to edit
         `flightClub` custom property value to set (by string representation)
         '''
+        url = f"https://vereinsflieger.de/member/community/editfunctions.php?uid={uid}"
         super().__init__(webdriver=webdriver,
-                         changeUrl=f"https://vereinsflieger.de/member/community/editfunctions.php?uid={uid}",
+                         changeUrl=url,
                          value=flightClub,
                          htmlSelector=f"suc_prop_512_{customPropertyNo}")
+
+
+class ChangeUserStatus(DropdownChange):
+
+    def __init__(self, webdriver: webdriver, uid: str, statusName: str):
+        '''
+        `ui` user to edit
+        `statusName` status to be set
+        '''
+        url = f"https://vereinsflieger.de/member/community/editcommunity.php?uid={uid}"
+        super().__init__(webdriver=webdriver,
+                         changeUrl=url,
+                         value=statusName,
+                         htmlSelector=f"frm_msid")
 
