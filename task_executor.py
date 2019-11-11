@@ -1,5 +1,6 @@
 from typing import List
 from tasks import Task
+from collections import deque
 import datetime
 import logging
 logger = logging.getLogger(__name__)
@@ -7,16 +8,16 @@ logger = logging.getLogger(__name__)
 
 class FinishEstimator:
 
-    def __init__(self, allItems: int):
+    def __init__(self, allItems: int, windowSize: int = 5):
+        self.statisticWindow = windowSize
         self.reset(allItems)
 
     def reset(self, allItems: int):
         self.allItems = allItems
         self.loopCounter = 0
         # items back in history for average computation
-        self.statisticWindow = 5
-        self.timeOfWindowBegin = None
-        self.timeOnLastTick = None
+        initialWindow = [None for i in range(self.statisticWindow)]
+        self.windowTickTimes = deque(initialWindow, self.statisticWindow)
         self.timePerItem = None
 
     def percent(self) -> float:
@@ -32,22 +33,20 @@ class FinishEstimator:
             itemsLeft = self.allItems - self.loopCounter
             return f"{int(itemsLeft * self.timePerItem)} sec"
 
+    def _time_of_window_begin(self) -> datetime.datetime:
+        return self.windowDelta
+
     def tick(self):
+        now = datetime.datetime.now()
         self.loopCounter += 1
 
-        if self.timeOfWindowBegin is None:
-            self.timeOfWindowBegin = datetime.datetime.now()
+        firstTimeInWindow = self.windowTickTimes.popleft()
 
-        # time measurements inside moving window
-        if self.loopCounter > self.statisticWindow - 1:
-            now = datetime.datetime.now()
-            tickDelta = now - self.timeOnLastTick
-            windowDelta = now - self.timeOfWindowBegin
-
+        if firstTimeInWindow:
+            windowDelta = now - firstTimeInWindow
             self.timePerItem = float(windowDelta.seconds) / float(self.statisticWindow)
-            self.timeOfWindowBegin = self.timeOfWindowBegin + tickDelta
 
-        self.timeOnLastTick = datetime.datetime.now()
+        self.windowTickTimes.append(now)
 
     def log_progress(self, logger: logging.Logger):
         message = ("Progress: {percent:.2f} % (Left: {no} items in "
