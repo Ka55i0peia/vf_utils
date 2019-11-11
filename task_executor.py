@@ -22,12 +22,15 @@ class FinishEstimator:
     def percent(self) -> float:
         return 100.0/float(self.allItems) * float(self.loopCounter)
 
-    def timeUntilComplete(self) -> str:
+    def items_left(self):
+        return self.allItems - self.loopCounter
+
+    def time_until_complete(self) -> str:
         if self.timePerItem is None:
-            return "estimation in progress"
+            return "<estimation in progress>"
         else:
             itemsLeft = self.allItems - self.loopCounter
-            return f"{itemsLeft * self.timePerItem} sec"
+            return f"{int(itemsLeft * self.timePerItem)} sec"
 
     def tick(self):
         self.loopCounter += 1
@@ -45,6 +48,13 @@ class FinishEstimator:
             self.timeOfWindowBegin = self.timeOfWindowBegin + tickDelta
 
         self.timeOnLastTick = datetime.datetime.now()
+
+    def log_progress(self, logger: logging.Logger):
+        message = ("Progress: {percent:.2f} % (Left: {no} items in "
+                   "approx. {time})").format(percent=self.percent(),
+                                            no=self.items_left(),
+                                            time=self.time_until_complete())
+        logger.info(message)
 
 
 class TaskExecutor:
@@ -68,4 +78,4 @@ class TaskExecutor:
 
             # some statistics
             progress.tick()
-            logger.info(f"Progress: {progress.percent()} % (Time left: {progress.timeUntilComplete()})")
+            progress.log_progress(logger)
