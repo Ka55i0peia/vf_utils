@@ -14,6 +14,9 @@ class Task:
     def execute(self) -> bool:
         pass
 
+    def ident(self) -> str:
+        return "Unnamed"
+
 
 class LoginToVf(Task):
 
@@ -21,6 +24,9 @@ class LoginToVf(Task):
         self.headlessMode = False
         self._webdriver = None
         self.credentialFile = credentialFile
+
+    def ident(self) -> str:
+        return f"VF Login with credentialFile '{self.credentialFile}'"
 
     @property
     def webdriver(self) -> webdriver:
@@ -84,6 +90,10 @@ class ComboboxChange(Task):
         self.cmbxHtmlName = cmbxHtmlName
         self.changeUrl = changeUrl
 
+        def ident(self) -> str:
+            return (f"Swap combobox value to '{self.cmbxTextValue}' (url={self.changeUrl} "
+                    f"comboboxName={self.cmbxHtmlName})")
+
     def execute(self) -> bool:
         driver = self.webdriver
 
@@ -105,28 +115,36 @@ class ComboboxChange(Task):
 
 class ChangeUserClubProperty(ComboboxChange):
 
-    def __init__(self, webdriver: webdriver, uid: str, flightClub: str, customPropertyNo: int = 1):
+    def __init__(self, webdriver: webdriver, uid: int, flightClub: str, customPropertyNo: int = 1):
         '''
         `ui` user to edit
         `flightClub` custom property value to set (by string representation)
         '''
+        self.uid = uid
         url = f"https://vereinsflieger.de/member/community/editfunctions.php?uid={uid}"
         super().__init__(webdriver=webdriver,
                          changeUrl=url,
                          cmbxTextValue=flightClub,
                          cmbxHtmlName=f"suc_prop_512_{customPropertyNo}")
 
+    def ident(self) -> str:
+        return f"Change user club uid='{self.uid}' to '{self.cmbxTextValue}'"
+
 
 class ChangeUserStatus(ComboboxChange):
 
-    def __init__(self, webdriver: webdriver, uid: str, statusName: str):
+    def __init__(self, webdriver: webdriver, uid: int, statusName: str):
         '''
         `ui` user to edit
         `statusName` status to be set
         '''
+        self.uid = uid
         url = f"https://vereinsflieger.de/member/community/editcommunity.php?uid={uid}"
         super().__init__(webdriver=webdriver,
                          changeUrl=url,
                          cmbxTextValue=statusName,
                          cmbxHtmlName=f"frm_msid")
+
+    def ident(self) -> str:
+        return f"Change user status uid='{self.uid}' to '{self.cmbxTextValue}'"
 

@@ -2,6 +2,7 @@ from typing import List
 from tasks import Task
 from collections import deque
 from typing import Optional
+from dataclasses import dataclass
 import datetime
 import time
 import logging
@@ -35,9 +36,6 @@ class FinishEstimator:
             itemsLeft = self.allItems - self.loopCounter
             return f"{int(itemsLeft * self.timePerItem)} sec"
 
-    def _time_of_window_begin(self) -> datetime.datetime:
-        return self.windowDelta
-
     def tick(self):
         now = datetime.datetime.now()
         self.loopCounter += 1
@@ -58,10 +56,18 @@ class FinishEstimator:
         logger.info(message)
 
 
+@dataclass
+class ExceptionalTask:
+    task: Task
+    exception: Exception
+
+
 class TaskExecutor:
 
     def __init__(self):
-        self.exceptionalTasks: List[Task] = []
+        self.exceptionalTasks: List[ExceptionalTask] = []
+        self.executeCount = 0
+        self.numberOfTasks = 0
 
     def execute(self, tasks: List[Task], delay: Optional[float] = 1.5):
         '''
@@ -70,18 +76,21 @@ class TaskExecutor:
         because VF will block our IP for a curtain time if we fire to much requests
         within a given time period.)
         '''
-        numberOfTasks = len(tasks)
-        progress = FinishEstimator(numberOfTasks)
+        self.exceptionalTasks = []
+        self.executeCount = 0
+        self.numberOfTasks = len(tasks)
+        progress = FinishEstimator(self.numberOfTasks)
 
         for task in tasks:
             if delay:
                 time.sleep(delay)
 
             try:
+                self.executeCount += 1
                 task.execute()
 
             except Exception as ex:
-                self.exceptionalTasks.append(task)
+                self.exceptionalTasks.append(ExceptionalTask(task, ex))
                 # TODO give the user more info which task fails
                 logger.error(f"Exception received while executing a task. Exception: {ex}")
                 logger.debug("Trace:\n", exc_info=ex)
@@ -89,3 +98,29 @@ class TaskExecutor:
             # some statistics
             progress.tick()
             progress.log_progress(logger)
+
+    def log_summary(self, logger: logging.Logger):
+
+        indent = '\t'
+        linebreak = '\n'
+        message = []
+        fails = len(self.exceptionalTasks)
+
+        if fails > 0:
+            message.append("The following tasks failed (executed: {a}, failed: {b}, {p:.2f} "
+                           "% fail)".format(a=self.executeCount,
+                                            b=fails,
+                                            p=100.0/self.executeCount*fails))
+        else:
+            message.append("All tasks succeeded :)")
+            
+        for fail in self.exceptionalTasks:
+            message.append(linebreak)
+            message.append(indent)
+            message.append(fail.task.ident())
+            # Get the message from exception. (Selenium pushes an line break at each exception
+            # representation). This gets the message or string represantion as fallback:
+            exceptionMessage = getattr(fail.exception, 'msg', str(fail.exception))
+            message.append(f" (Reason: {exceptionMessage})")
+
+        logger.info(''.join(message))
