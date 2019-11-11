@@ -20,7 +20,7 @@ if __name__ == '__main__':
         with open("input/gaeste_2019.txt", "r") as f:
             line = f.readline()
             while line:
-                t = tasks.ChangeUserStatus(driver, uid=int(line), statusName="Gastverin Zugangsberechtigung abgelaufen")
+                t = tasks.ChangeUserStatus(driver, uid=int(line), statusName="Gastverein Zugangsberechtigung abgelaufen")
                 taskList.append(t)
                 line = f.readline()
 
