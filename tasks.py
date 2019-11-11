@@ -8,14 +8,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class TaskBase:
+class Task:
 
     @abc.abstractmethod
     def execute(self) -> bool:
         pass
 
 
-class LoginToVf(TaskBase):
+class LoginToVf(Task):
 
     def __init__(self, headlessMode: bool, credentialFile: str = "vf_login_credentials.txt"):
         self.headlessMode = False
@@ -55,32 +55,25 @@ class LoginToVf(TaskBase):
 
         driver = webdriver.Firefox(firefox_profile=profile, options=options)
         self._webdriver = driver
-        # TODO move this common exception handling to an annotation (follow aspect oriented programming)
+        driver.get("https://vereinsflieger.de/")
+
+        # check if we are already logged in ..
         try:
-            driver.get("https://vereinsflieger.de/")
-
-            # check if we are already logged in ..
-            try:
-                driver.find_element_by_link_text("Mein Profil")
-                return True
-            except NoSuchElementException:
-                # no, we aren't logged in already
-                pass
-
-            # login
-            (user, pwd) = type(self).get_user_and_passwd_from_file(self.credentialFile)
-            driver.find_element_by_name("user").send_keys(user)
-            driver.find_element_by_name("pwinput").send_keys(pwd)
-            driver.find_element_by_name("submit").click()
-
+            driver.find_element_by_link_text("Mein Profil")
             return True
-        except Exception as ex:
-            logger.error(ex)
-            logger.debug("Trace:\n", exc_info=ex)
-            return False
+        except NoSuchElementException:
+            # no, we aren't logged in already
+            pass
 
+        # login
+        (user, pwd) = type(self).get_user_and_passwd_from_file(self.credentialFile)
+        driver.find_element_by_name("user").send_keys(user)
+        driver.find_element_by_name("pwinput").send_keys(pwd)
+        driver.find_element_by_name("submit").click()
 
-class ComboboxChange(TaskBase):
+        return True
+
+class ComboboxChange(Task):
 
     def __init__(self, webdriver: webdriver, changeUrl: str, cmbxHtmlName: str,
                  cmbxTextValue: str):
@@ -92,25 +85,21 @@ class ComboboxChange(TaskBase):
 
     def execute(self) -> bool:
         driver = self.webdriver
-        # TODO move this common exception handling to an annotation (follow aspect oriented programming)
-        try:
-            driver.get(self.changeUrl)
 
-            # get dropdown element and select club
-            combobox = driver.find_element_by_name(self.cmbxHtmlName)
-            selector = Select(combobox)
-            selector.select_by_visible_text(self.cmbxTextValue)
+        # open webpage
+        driver.get(self.changeUrl)
 
-            # hit the submit method on elements lets silenumn walk up the DOM to the form element and submit it
-            combobox.submit()
+        # get dropdown element and select value
+        combobox = driver.find_element_by_name(self.cmbxHtmlName)
+        selector = Select(combobox)
+        selector.select_by_visible_text(self.cmbxTextValue)
 
-            # TODO implement a checker for valid input (may make use of JS function: checkMandatory())
-            return True
-        except Exception as ex:
-            logger.error(ex)
-            logger.debug("Trace:\n", exc_info=ex)
-            return False
+        # hit the submit method on element. (This lets silenumn walk up the DOM tree 
+        # to the <form> tag and submit it.)
+        combobox.submit()
 
+        # TODO implement a checker for valid input (may make use of JS function: checkMandatory())
+        return True
 
 class ChangeUserClubProperty(ComboboxChange):
 
