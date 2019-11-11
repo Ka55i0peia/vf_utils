@@ -1,7 +1,9 @@
 from typing import List
 from tasks import Task
 from collections import deque
+from typing import Optional
 import datetime
+import time
 import logging
 logger = logging.getLogger(__name__)
 
@@ -61,11 +63,20 @@ class TaskExecutor:
     def __init__(self):
         self.exceptionalTasks: List[Task] = []
 
-    def execute(self, tasks: List[Task]):
+    def execute(self, tasks: List[Task], delay: Optional[float] = 1.5):
+        '''
+        Executes `tasks`` one by one.
+        Between each task a `delay` in seconds can be awaited. (This is useful,
+        because VF will block our IP for a curtain time if we fire to much requests
+        within a given time period.)
+        '''
         numberOfTasks = len(tasks)
         progress = FinishEstimator(numberOfTasks)
 
         for task in tasks:
+            if delay:
+                time.sleep(delay)
+
             try:
                 task.execute()
 

@@ -73,6 +73,7 @@ class LoginToVf(Task):
 
         return True
 
+
 class ComboboxChange(Task):
 
     def __init__(self, webdriver: webdriver, changeUrl: str, cmbxHtmlName: str,
@@ -100,6 +101,7 @@ class ComboboxChange(Task):
 
         # TODO implement a checker for valid input (may make use of JS function: checkMandatory())
         return True
+
 
 class ChangeUserClubProperty(ComboboxChange):
 
