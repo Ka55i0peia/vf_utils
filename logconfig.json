@@ -1,0 +1,43 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "detailed": {
+            "class": "logging.Formatter",
+            "format": "%(asctime)s %(name)-15s %(levelname)-8s %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "detailed"
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "full.log",
+            "mode": "w",
+            "level": "DEBUG",
+            "formatter": "detailed"
+        },
+        "errors": {
+            "class": "logging.FileHandler",
+            "filename": "error.log",
+            "mode": "w",
+            "level": "ERROR",
+            "formatter": "detailed"
+        }
+    },
+    "loggers": {
+        "urllib3": {
+            "level": "INFO"
+        },
+        "selenium": {
+            "level": "INFO"
+        }
+     },
+    "root": {
+        "handlers": ["console", "file", "errors"],
+        "level": "DEBUG"
+    }
+}
