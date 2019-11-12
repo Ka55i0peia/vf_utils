@@ -1,7 +1,7 @@
 ## About
 
-This git repo is about a swiss knife like tool collection for using vereinsflieger.de.
-It is addresses vereinsflieger administrators faced to the task of managing datasets on this plattform (like user access management, supporting club accounting and generating statistics). For me its a private project allowing me to test architecture patterns and new language patterns of python.
+This git repo is about a swiss knife like tool collection for using [vereinsflieger.de](https://vereinsflieger.de/).
+It is addresses vereinsflieger administrators faced to the task of managing datasets on this plattform (like user access management, supporting club accounting and generating statistics). For me its a private project allowing me to apply architecture and new language patterns of python next of supporting my flight club [aeroclub prina](https://www.aeroclub-pirna.de).
 
 ## Content
 
