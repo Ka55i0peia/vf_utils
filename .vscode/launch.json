@@ -5,18 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: bulk_edit.py",
+            "name": "Python: bulk_edit",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/bulk_edit.py",
-            "console": "integratedTerminal"
+            "module": "bulk_edit"
         },
         {
-            "name": "Python: test_progress.py",
+            "name": "Python: test_progress",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/test_progress.py",
-            "console": "integratedTerminal"
+            "module": "bulk_edit.test.test_progress"
         }
     ]
 }

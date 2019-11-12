@@ -1,5 +1,5 @@
+from bulk_edit.tasks import Task
 from typing import List
-from tasks import Task
 from collections import deque
 from typing import Optional
 from dataclasses import dataclass
@@ -51,8 +51,8 @@ class FinishEstimator:
     def log_progress(self, logger: logging.Logger):
         message = ("Progress: {percent:.2f} % (Left: {no} items in "
                    "approx. {time})").format(percent=self.percent(),
-                                            no=self.items_left(),
-                                            time=self.time_until_complete())
+                                             no=self.items_left(),
+                                             time=self.time_until_complete())
         logger.info(message)
 
 
@@ -113,7 +113,7 @@ class TaskExecutor:
                                             p=100.0/self.executeCount*fails))
         else:
             message.append("All tasks succeeded :)")
-            
+
         for fail in self.exceptionalTasks:
             message.append(linebreak)
             message.append(indent)

@@ -4,7 +4,7 @@ import logging.config
 logger = logging.getLogger(__name__)
 
 
-def load_log_config():
+def load_config():
     try:
         with open("logconfig.json", "r") as f:
             config = json.load(f)

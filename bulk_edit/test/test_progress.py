@@ -1,13 +1,12 @@
-from task_executor import FinishEstimator
+from bulk_edit import FinishEstimator, log
 from random import randrange
 import time
 import logging
-from logconfig import load_log_config
 logger = logging.getLogger(__name__)
 
 
 if __name__ == "__main__":
-    load_log_config()
+    log.load_config()
     elements = 100
     progress = FinishEstimator(elements, windowSize=7)
 

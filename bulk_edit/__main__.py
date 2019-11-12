@@ -1,14 +1,12 @@
-import tasks
-from task_executor import TaskExecutor
-from logconfig import load_log_config
+from bulk_edit import tasks, log, TaskExecutor
+from bulk_edit.tasks.members import community as community_task
 import atexit
-import os
 import logging
 logger = logging.getLogger(__name__)
 
 
 if __name__ == '__main__':
-    load_log_config()
+    log.load_config()
     try:
         login = tasks.LoginToVf(headlessMode=False)
 
@@ -20,7 +18,12 @@ if __name__ == '__main__':
         with open("input/gaeste_2019.txt", "r") as f:
             line = f.readline()
             while line:
-                t = tasks.ChangeUserStatus(driver, uid=int(line), statusName="Gastverein Zugangsberechtigung abgelaufen")
+                taskParameter = {
+                    "driver": driver,
+                    "uid": int(line),
+                    "statusName": "Gastverein Zugangsberechtigung abgelaufen"
+                }
+                t = community_task.ChangeUserStatus(**taskParameter)
                 taskList.append(t)
                 line = f.readline()
 
@@ -30,7 +33,7 @@ if __name__ == '__main__':
         # executes all tasks
         batchProcess.execute(taskList)
 
-    except KeyboardInterrupt as ex:
+    except KeyboardInterrupt:
         logger.info("User interrupted")
 
     except Exception as ex:
