@@ -24,7 +24,7 @@ Downloading data requires:
 
 ## Setup Dev Environment
 
-The setup is very simple. All dependencies are defined in the [requirements.txt].
+The setup is very simple. All dependencies are defined in the [`requirements.txt`](requirements.txt).
 I suggest to use the python virtual environment:
 
 ```shell
@@ -35,8 +35,7 @@ pip install -r requirements.txt
 # Thats all.
 ```
 
-I used vscode as IDE. Thus take a look at [.vscode/launch.json] for program entrie
-points for starting/debugging.
+I used vscode as IDE. Thus take a look at [`.vscode/launch.json`](.vscode/launch.json) for program entry points for starting/debugging.
 
 If you are using a different IDE (or like to start the program from command line),
 please start the program as module (using the `python -m` option).
