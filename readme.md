@@ -5,16 +5,13 @@ It's designed for club administrators faced with the task to manage dataset like
 access or supporting club accounting. For me its a private python project allowing me
 to test architecture patterns and new language patterns of python.
 
-As first module [bulk_edit] supports you with a bulk editing functionality that is
-painfully missing in the web GUI of vereinsflieger. The usecase behind is some batch
-like setting of dataset values. In past I was faced with the some task where I need to change the user status of approx 150 members. I don't want todo this manually one by one. Approx a year ago I started this with a hacky solution of screenshot based mouse and keyboard automation -- google sikuli for further info. That was working but is highly machine dependent. In a different
-context i found a (in my eyes) more stable way using the webgui testing tool selenium.
+As first module [bulk_edit](bulk_edit/) supports you with a bulk editing functionality that was for me painfully missing in the web GUI of vereinsflieger. The usecase behind is some batch like setting of dataset values. In past I was faced with the some task where I need to change the user status of lets say 150 members. I don't want todo this manually one by one. Approx. one year ago I started this with a hacky solution of screenshot based mouse and keyboard automation (google sikuli for further info). That was working but is highly machine dependent. In a different context i found a (in my eyes) more stable way using the webgui testing tool [selenium](https://en.wikipedia.org/wiki/Selenium_(software)).
 
 ## IMPORTANT NOTE
 
 Please use the tool **bulk_edit** with care and at your own risk!!! 
 
-The tool is under development. The file [bulk_edit/__main__.py] currenlty implements the construction of tasks to perfom in a hard coded way! Modify it for your use case. **Run the script only if you know what you are doing!**
+The tool is under development. The file [`bulk_edit/__main__.py`](bulk_edit/__main__.py) currenlty implements the construction of tasks to perfom in a hard coded way! Modify it for your use case. **Run the script only if you know what you are doing!**
 
 ## Requirements
 
