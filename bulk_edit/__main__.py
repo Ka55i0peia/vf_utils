@@ -19,7 +19,7 @@ if __name__ == '__main__':
             line = f.readline()
             while line:
                 taskParameter = {
-                    "driver": driver,
+                    "webdriver": driver,
                     "uid": int(line),
                     "statusName": "Gastverein Zugangsberechtigung abgelaufen"
                 }
