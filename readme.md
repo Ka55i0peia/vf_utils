@@ -7,15 +7,16 @@ It is addresses vereinsflieger administrators faced to the task of managing data
 
 ### bulk_edit
 
-As first module [bulk_edit](bulk_edit/) supports you with a batch-like editing functionality for the painfully missing "bulk edit" functionality (like known from JIRA) in the web gui of vereinsflieger. The usecase is the automatisation of edits (especially of simply changing dataset values).
+As first module [bulk_edit](bulk_edit/) supports you with a batch-like editing function for the painfully missing "bulk edit" functionality in the web gui of vereinsflieger (like known from JIRA). The usecase is the automatisation of "monkey edits" in the platform.
 
    Examples   
-   * Change user status (in case of flight weeks by guests)
-   * Toggle flight permission ("Flugfreigabe")
+   * Change user status (e.g. in case of flight weeks by guests)
    * Grant (new) user permissions
+   * Toggle flight permission ("Flugfreigabe")
    * Applying custom properties ("Mitgliedereigenschaften")
+   * Updating flight accounting properties ("Abrechnungsart")
 
-*In past* I was faced with the some task where I need to change the user status of lets say 150 members. I don't want todo this manually one by one. Approx. one year ago I started this idea based on [sikuli](https://de.wikipedia.org/wiki/Sikuli_(Software)) (a nice java tool for screenshot based mouse and keyboard automation). Because its screenshot based it is highly machine dependent. Thus this tool was hard to share.
+*In past* I was faced with this task where I need to change hundreds of datasets. I don't want todo this manually one by one. Approx. one year ago I started this idea based on [sikuli](https://de.wikipedia.org/wiki/Sikuli_(Software)) (a nice java tool for screenshot based mouse and keyboard automation). Because its screenshot based it is highly machine dependent. Thus this tool was hard to share/maintain among others.
 
 *bulk_edit* does this automatisation job referencing DOM elements of the webpage within the browser engine using the library [selenium](https://en.wikipedia.org/wiki/Selenium_(software)).
 
