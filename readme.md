@@ -27,7 +27,9 @@ The file [`bulk_edit/__main__.py`](bulk_edit/__main__.py) at the current stage o
 
 ## Requirements
 
-[Selenium](https://www.seleniumhq.org/) uses an installed browser. (I tested with Firefox.) As a result next the dependencies specified in [`requirements.txt`](requirements.txt), you need the following on the machine:
+[Selenium](https://www.seleniumhq.org/) uses an browser on your machine. I used it with Firefox. So next to the dependencies specified in [`requirements.txt`](requirements.txt), you need the following on your machine:
+
+For Selenium and FF:
 
 1. Firefox installed
 2. Geckodriver
