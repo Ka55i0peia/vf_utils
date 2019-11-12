@@ -23,7 +23,7 @@ As first module [bulk_edit](bulk_edit/) supports you with a batch-like editing f
 
 **_Please use the tool `bulk_edit` with care and at your own risk!_**
 
-The file [`bulk_edit/__main__.py`](bulk_edit/__main__.py) at the current stage of development is hard coding the tasks to be done. Modify it for your use case! **Run the script only if you know what you are doing!**
+The file [`bulk_edit/__main__.py`](bulk_edit/__main__.py) at the current stage of development contains hard coded the task preparation. See todo notes in source. Modify this file for your use case! **Run the script only if you know what you are doing!**
 
 ## Requirements
 

@@ -14,17 +14,22 @@ if __name__ == '__main__':
         driver = login.webdriver
 
         # prepare task list
+        # TODO provide a CLI!
+        # TODO provide the line wise reading as task
+        # TODO ui suggestion: let the user define the chain in a simple txt file
         taskList = []
         with open("input/gaeste_2019.txt", "r") as f:
             line = f.readline()
             while line:
+                # prepare task
                 taskParameter = {
                     "webdriver": driver,
                     "uid": int(line),
                     "statusName": "Gastverein Zugangsberechtigung abgelaufen"
                 }
-                t = community_task.ChangeUserStatus(**taskParameter)
-                taskList.append(t)
+                task = community_task.ChangeUserStatus
+                taskList.append(task(**taskParameter))
+                # makes this loop a for each line
                 line = f.readline()
 
         batchProcess = TaskExecutor()
