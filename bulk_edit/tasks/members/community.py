@@ -17,7 +17,7 @@ class ChangeUserClubProperty(ComboboxChange):
                          cmbxHtmlName=f"suc_prop_512_{customPropertyNo}")
 
     def ident(self) -> str:
-        return f"Change user club uid='{self.uid}' to '{self.cmbxTextValue}'"
+        return f"Change user club (uid='{self.uid}') to '{self.cmbxTextValue}'"
 
 
 class ChangeUserStatus(ComboboxChange):
@@ -35,4 +35,4 @@ class ChangeUserStatus(ComboboxChange):
                          cmbxHtmlName=f"frm_msid")
 
     def ident(self) -> str:
-        return f"Change user status uid='{self.uid}' to '{self.cmbxTextValue}'"
+        return f"Change user status (uid='{self.uid}') to '{self.cmbxTextValue}'"
