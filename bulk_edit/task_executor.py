@@ -1,10 +1,9 @@
 from bulk_edit.tasks import Task
 from typing import List
-from collections import deque
+from collections import deque, abc
 from typing import Optional
 from dataclasses import dataclass
 import datetime
-import time
 import logging
 logger = logging.getLogger(__name__)
 
@@ -69,7 +68,40 @@ class TaskExecutor:
         self.executeCount = 0
         self.numberOfTasks = 0
 
-    def execute(self, tasks: List[Task], delay: Optional[float] = 1.5):
+    def _execute_chain(self, tasks: List[Task], input: dict):
+        if len(tasks) == 0:
+            return
+
+        task = tasks[0]
+        if len(tasks) == 1:
+            chain = []
+        else:
+            chain = tasks[1:]
+
+        try:
+            # execute task
+            output = task.execute(input)
+
+            # output is iterable
+            if isinstance(output, abc.Iterable):
+                outputItr = iter(output)
+                for ithOutput in outputItr:
+                    self._execute_chain(chain, ithOutput.payload)
+
+            # task output is not iterable
+            else:
+                if output.task_succeed:
+                    self._execute_chain(chain, output.payload)
+                else:
+                    logger.error(f"Task '{task.ident()}' execution failed")
+
+        except Exception as ex:
+            self.exceptionalTasks.append(ExceptionalTask(task, ex))
+            # TODO give the user more info which task fails
+            logger.error(f"Exception received while executing a task. Exception: {ex}")
+            logger.debug("Trace:\n", exc_info=ex)
+
+    def execute(self, tasks: List[Task]):
         '''
         Executes `tasks`` one by one.
         Between each task a `delay` in seconds can be awaited. (This is useful,
@@ -77,27 +109,9 @@ class TaskExecutor:
         within a given time period.)
         '''
         self.exceptionalTasks = []
-        self.executeCount = 0
-        self.numberOfTasks = len(tasks)
-        progress = FinishEstimator(self.numberOfTasks)
 
-        for task in tasks:
-            if delay:
-                time.sleep(delay)
-
-            try:
-                self.executeCount += 1
-                task.execute()
-
-            except Exception as ex:
-                self.exceptionalTasks.append(ExceptionalTask(task, ex))
-                # TODO give the user more info which task fails
-                logger.error(f"Exception received while executing a task. Exception: {ex}")
-                logger.debug("Trace:\n", exc_info=ex)
-
-            # some statistics
-            progress.tick()
-            progress.log_progress(logger)
+        input = {}
+        self._execute_chain(tasks, input)
 
     def log_summary(self, logger: logging.Logger):
 

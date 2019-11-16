@@ -1,25 +1,37 @@
-from bulk_edit.tasks import Task
+from bulk_edit.tasks import Task, TaskOutput
+from typing import Union, Iterable
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
 
 
+class CreateFirefoxControl(Task):
+    def __init__(self, headlessMode: bool):
+        self.headlessMode = False
+
+    def ident(self) -> str:
+        return f"Create firefox control"
+
+    def execute(self, input: dict) -> Union[TaskOutput, Iterable[TaskOutput]]:
+        output = super().execute(input)
+
+        profile = webdriver.FirefoxProfile()
+        options = Options()
+        # this line starts FF in headless mode
+        options.headless = self.headlessMode
+        driver = webdriver.Firefox(firefox_profile=profile, options=options)
+
+        output["webdriver"] = driver
+        return output
+
+
 class LoginToVf(Task):
 
-    def __init__(self, headlessMode: bool, credentialFile: str = "vf_login_credentials.txt"):
-        self.headlessMode = False
-        self._webdriver = None
+    def __init__(self, credentialFile: str = "vf_login_credentials.txt"):
         self.credentialFile = credentialFile
 
     def ident(self) -> str:
         return f"VF Login with credentialFile '{self.credentialFile}'"
-
-    @property
-    def webdriver(self) -> webdriver:
-        if self._webdriver is None:
-            raise Exception("Execute LoginToVf task first!")
-
-        return self._webdriver
 
     # NOTE candidate for global utility
     @staticmethod
@@ -39,20 +51,16 @@ class LoginToVf(Task):
 
         return (user, pwd)
 
-    def execute(self) -> bool:
-        profile = webdriver.FirefoxProfile()
-        options = Options()
-        # this line starts FF in headless mode
-        options.headless = self.headlessMode
+    def execute(self, input: dict) -> Union[TaskOutput, Iterable[TaskOutput]]:
+        output = super().execute(input)
 
-        driver = webdriver.Firefox(firefox_profile=profile, options=options)
-        self._webdriver = driver
+        driver = Task.get_parameter(input, "webdriver")
         driver.get("https://vereinsflieger.de/")
 
         # check if we are already logged in ..
         try:
             driver.find_element_by_link_text("Mein Profil")
-            return True
+            return output
         except NoSuchElementException:
             # no, we aren't logged in already
             pass
@@ -63,4 +71,4 @@ class LoginToVf(Task):
         driver.find_element_by_name("pwinput").send_keys(pwd)
         driver.find_element_by_name("submit").click()
 
-        return True
+        return output
