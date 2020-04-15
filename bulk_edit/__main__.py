@@ -18,16 +18,19 @@ if __name__ == '__main__':
         # TODO provide the line wise reading as task
         # TODO ui suggestion: let the user define the chain in a simple txt file
         taskList = []
-        with open("input/gaeste_2019.txt", "r") as f:
+        with open("input/mustermann.txt", "r") as f:
             line = f.readline()
             while line:
                 # prepare task
                 taskParameter = {
                     "webdriver": driver,
                     "uid": int(line),
-                    "statusName": "Gastverein Zugangsberechtigung abgelaufen"
+                    "costType": "Zukunftsfond",
+                    "comment": "test",
+                    "validFrom": "1.1.2020",
+                    "validTo": "31.12.2020"
                 }
-                task = community_task.ChangeUserStatus
+                task = community_task.AddCommunityCosts
                 taskList.append(task(**taskParameter))
                 # makes this loop a for each line
                 line = f.readline()

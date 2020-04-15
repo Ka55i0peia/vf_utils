@@ -1,5 +1,6 @@
-from ..task_base import ComboboxChange
+from ..task_base import ComboboxChange, Task
 from selenium import webdriver
+from selenium.webdriver.support.ui import Select
 
 
 class ChangeUserClubProperty(ComboboxChange):
@@ -36,3 +37,51 @@ class ChangeUserStatus(ComboboxChange):
 
     def ident(self) -> str:
         return f"Change user status (uid='{self.uid}') to '{self.cmbxTextValue}'"
+
+
+class AddCommunityCosts(Task):
+
+    def __init__(self, webdriver: webdriver, uid: int, costType: str,
+                 comment: str, validFrom: str, validTo: str):
+        '''
+        GUI item: Gebühren -> Neuer Datensatz
+        '''
+        self.webdriver = webdriver
+        self.url = f"https://vereinsflieger.de/member/community/editcommunitycost.php?uid={uid}"
+
+        self.uid = uid
+        self.costType = costType
+        self.comment = comment
+        self.validFrom = validFrom
+        self.validTo = validTo
+
+    def execute(self) -> bool:
+        driver = self.webdriver
+
+        # open webpage
+        driver.get(self.url)
+
+        newCostButton = driver.find_element_by_id('TlbItem1')
+        newCostButton.click()
+
+        costType = driver.find_element_by_name('frm_ctid')
+        selector = Select(costType)
+        selector.select_by_visible_text(self.costType)
+
+        comment = driver.find_element_by_name('frm_comment')
+        comment.send_keys(self.comment)
+
+        validFrom = driver.find_element_by_name('frm_validfrom')
+        validFrom.clear()
+        validFrom.send_keys(self.validFrom)
+
+        validTo = driver.find_element_by_name('frm_validto')
+        validTo.send_keys(self.validTo)
+
+        costType.submit()
+
+        # TODO implement a checker for valid input (may make use of JS function: checkMandatory())
+        return True
+
+    def ident(self) -> str:
+        return f"AddCommunityCosts for user {self.uid}"
