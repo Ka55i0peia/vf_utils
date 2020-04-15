@@ -15,8 +15,11 @@ if __name__ == '__main__':
 
         # prepare task list
         # TODO provide a CLI!
-        # TODO provide the line wise reading as task
-        # TODO ui suggestion: let the user define the chain in a simple txt file
+        #      params: 
+        #         * task name
+        #         * task data as key value list
+        #      TODO let the Task returns it's parameter
+        #         * support cli by returning possible keys for a given task name
         taskList = []
         with open("input/mustermann.txt", "r") as f:
             line = f.readline()
