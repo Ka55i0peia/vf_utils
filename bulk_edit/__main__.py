@@ -14,11 +14,6 @@ logger = logging.getLogger(__name__)
 def get_input_from_cli():
     parser = argparse.ArgumentParser(prog='bulk_edit',
                                      description='Doing bulk edit jobs for vereinsflieger.de')
-    # TODO DESIGN
-    # program [action] [parameters]
-    #  * action in (list, run)
-    #  * if action in run
-    #     - --forUidsFile <filename> (executes in loop for every line of file expecting an uid)
 
     parser.add_argument('action', choices=['list', 'run'],
                         help='Action to perform')
@@ -31,6 +26,7 @@ def get_input_from_cli():
                              'from file (one uid per line)')
     parser.add_argument('-v', '--silent', action='store_true', default=False)
     parser.add_argument('-o', '--keepOpen', action='store_true', default=False)
+
     options = parser.parse_args()
 
     return options
