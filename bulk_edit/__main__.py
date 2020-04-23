@@ -1,7 +1,7 @@
 from bulk_edit import tasks, log, TaskExecutor
 # TODO we need to import all from comunity in order to load class by string from globals()
 #      (not nice but working)
-from bulk_edit.tasks.members.community import *
+from bulk_edit.tasks.community import *
 from bulk_edit.tasks.task_base import Task, print_subclass
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
@@ -78,27 +78,32 @@ if __name__ == '__main__':
 
         driver = generate_webdriver(options.silent)
 
-        # TODO handle excpetion in class instanciation with a user message to check list
+        # read uid from user input or from file
         taskList = []
-        if options.uid_file_name:
-            # check if uid is specified explicit
-            if 'uid' in parameters:
-                logger.warning("Option `--uidFile` and `uid` is specified. `uid` will be "
-                            "discarded. Instead uids from file will be read")
-                del parameters['uid']
+        try:
+            if options.uid_file_name:
+                # check if uid is specified explicit
+                if 'uid' in parameters:
+                    logger.warning("Option `--uidFile` and `uid` is specified. `uid` will be "
+                                "discarded. Instead uids from file will be read.")
+                    del parameters['uid']
 
-            with open(options.uid_file_name, "r") as f:
-                line = f.readline()
-                while line:
-                    # prepare task
-                    task = task_t(driver=driver, uid=int(line), **parameters)
-                    taskList.append(task)
-                    # makes this loop a for each line
+                with open(options.uid_file_name, "r") as f:
                     line = f.readline()
+                    while line:
+                        # prepare task
+                        task = task_t(driver=driver, uid=int(line), **parameters)
+                        taskList.append(task)
+                        # makes this loop a for each line
+                        line = f.readline()
 
-        else:
-            task = task_t(driver=driver, **parameters)
-            taskList.append(task)
+            else:
+                task = task_t(driver=driver, **parameters)
+                taskList.append(task)
+        except TypeError as ex:
+            logger.error(f"Task creation failed with message '{ex}'.\n"
+                         "Check if you specified all parameters!")
+            exit(1)
 
         # execute list
         # TODO let the user enter user and pwd if no credential file specified

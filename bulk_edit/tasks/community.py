@@ -1,4 +1,4 @@
-from ..task_base import ComboboxChange, Task
+from .task_base import ComboboxChange, Task
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from typing import List
