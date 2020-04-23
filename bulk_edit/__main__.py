@@ -26,6 +26,10 @@ def get_input_from_cli():
                              'from file (one uid per line)')
     parser.add_argument('-v', '--silent', action='store_true', default=False)
     parser.add_argument('-o', '--keepOpen', action='store_true', default=False)
+    parser.add_argument('--credentialFile', type=str,
+                        help=('A simple text file with content the following content.\n'
+                              'first line: user name\n'
+                              'second line: password'))
 
     options = parser.parse_args()
 
@@ -106,8 +110,10 @@ if __name__ == '__main__':
             exit(1)
 
         # execute list
-        # TODO let the user enter user and pwd if no credential file specified
-        login = tasks.LoginToVf(driver)
+        loginParams = {}
+        if options.credentialFile:
+            loginParams['credentialFile'] = options.credentialFile
+        login = tasks.LoginToVf(driver, **loginParams)
         login.execute()
 
         batchProcess = TaskExecutor()

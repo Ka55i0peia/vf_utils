@@ -2,13 +2,17 @@ from bulk_edit.tasks import Task
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from typing import List, Tuple
+from getpass import getpass
+import logging
+logger = logging.getLogger(__name__)
 
 
 class LoginToVf(Task):
 
-    def __init__(self, driver: webdriver, credentialFile: str = "vf_login_credentials.txt"):
+    def __init__(self, driver: webdriver, credentialFile: str = '', user: str = ''):
         self.driver = driver
         self.credentialFile = credentialFile
+        self.user = user
 
     @classmethod
     def parameters(cls) -> List[str]:
@@ -36,6 +40,14 @@ class LoginToVf(Task):
 
         return (user, pwd)
 
+    @staticmethod
+    def get_user_and_pwd_from_cli(user: str = '') -> Tuple[str, str]:
+        print('Please enter user password to login to vereinflieger.de')
+        if user == '':
+            user = input('user: ')
+        pwd = getpass('password: ')
+        return (user, pwd)
+
     def execute(self) -> bool:
         self.driver.get("https://vereinsflieger.de/")
 
@@ -47,8 +59,19 @@ class LoginToVf(Task):
             # no, we aren't logged in already
             pass
 
+        # get credentials
+        if self.credentialFile is not None:
+            try:
+                (user, pwd) = type(self).get_user_and_passwd_from_file(self.credentialFile)
+            except Exception as ex:
+                logger.error(f"Reading credential file '{self.credentialFile}' failed.")
+                logger.debug(ex, exc_info=ex)
+                # fallback
+                (user, pwd) = type(self).get_user_and_pwd_from_cli(self.user)
+        else:
+            (user, pwd) = type(self).get_user_and_pwd_from_cli(self.user)
+
         # login
-        (user, pwd) = type(self).get_user_and_passwd_from_file(self.credentialFile)
         self.driver.find_element_by_name("user").send_keys(user)
         self.driver.find_element_by_name("pwinput").send_keys(pwd)
         self.driver.find_element_by_name("submit").click()
