@@ -1,4 +1,9 @@
 env/
+.eggs/
+build/
+dist/
+.pytest_cache/
+vf_utils.egg-info/
 *.pyc
 *.log
 vf_login_credentials.txt

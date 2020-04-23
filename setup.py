@@ -1,7 +1,8 @@
 import os
 import sys
 
-from setuptools import setup
+from setuptools import setup, find_packages
+
 
 name = 'Jan Gietzel'
 mail = 'jan.gietzel@gmail.com'
@@ -29,19 +30,20 @@ elif sys.argv[-1] == 'clean':
 
 setup(
     name="vf_utils",
-    version="0.1.0",
+    version="0.1.3",
     author=name,
     author_email=mail,
     description="Doing bulk edit jobs for vereinsflieger.de",
     license="MIT",
     keywords="vereinsflieger.de",
     url="https://github.com/Ka55i0peia/vf_utils",
-    packages=['bulk_edit'],
+    packages=find_packages(),
     long_description_content_type='text/markdown',
     long_description=long_description,
     python_requires='>=3',
     install_requires=[
           'selenium>=3.141.0',
           'argparse>=1.4.0'
-    ]
+    ],
+    setup_requires=["wheel"]
 )
