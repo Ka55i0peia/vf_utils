@@ -15,21 +15,50 @@ def get_input_from_cli():
     parser = argparse.ArgumentParser(prog='bulk_edit',
                                      description='Doing bulk edit jobs for vereinsflieger.de')
 
+    helpText = {
+        "action": \
+        "Action to perform",
+
+        "task_name": \
+        "Task name to run / list. Use * to list all task\'s.",
+
+        "task_parameter": \
+        "Specify task parameter when running a task (syntax: name=value). See output of list "
+        "task's for task parameter hints!",
+
+        "uidFile": \
+        "To run a task as bulk edit, specify task parameter `uid` as list in a file: Simply one "
+        "uid per line. The task will be repeated with task parameter uid read from file.",
+
+        "credentialFile": \
+        "Alternatively to typing in your user and password you can specify your login credentials "
+        "within a text file. first line: user name, second line: password.\n"
+        "Please note that the file is not encrypted and will be readable for everyone with file "
+        "access.",
+
+        "silent": \
+        "If you add this flag the web browser will open in headless mode. This means no window "
+        "appear and the bulk edit job will run silent in background. This can be useful e.g. for "
+        "scheduled task like backup data.",
+
+        "keepOpen": \
+        "If you add this flag the browser window wouldn't get closed at the end."
+    }
+
     parser.add_argument('action', choices=['list', 'run'],
-                        help='Action to perform')
+                        help=helpText['action'])
     parser.add_argument('task_name', default='*',
-                        help='task name to run / list. Use * to list all task\'s.')
+                        help=helpText['task_name'])
     parser.add_argument('task_parameter', nargs='*', default=[],
-                        help='parameter for task (syntax: name=value)')
-    parser.add_argument('--uidFile', type=str, dest='uid_file_name',
-                        help='If specified the task will be repeated with parameter `uid`s read '
-                             'from file (one uid per line)')
-    parser.add_argument('-v', '--silent', action='store_true', default=False)
-    parser.add_argument('-o', '--keepOpen', action='store_true', default=False)
-    parser.add_argument('--credentialFile', type=str,
-                        help=('A simple text file with content the following content.\n'
-                              'first line: user name\n'
-                              'second line: password'))
+                        help=helpText['task_parameter'])
+    parser.add_argument('--uidFile', type=str, dest='uid_file',
+                        help=helpText['uidFile'])
+    parser.add_argument('-v', '--silent', action='store_true', default=False,
+                        help=helpText['silent'])
+    parser.add_argument('-o', '--keepOpen', action='store_true', default=False,
+                        help=helpText['keepOpen'])
+    parser.add_argument('--credentialFile', type=str, dest='login_file',
+                        help=helpText['credentialFile'])
 
     options = parser.parse_args()
 
@@ -85,14 +114,14 @@ if __name__ == '__main__':
         # read uid from user input or from file
         taskList = []
         try:
-            if options.uid_file_name:
+            if options.uid_file:
                 # check if uid is specified explicit
                 if 'uid' in parameters:
                     logger.warning("Option `--uidFile` and `uid` is specified. `uid` will be "
                                 "discarded. Instead uids from file will be read.")
                     del parameters['uid']
 
-                with open(options.uid_file_name, "r") as f:
+                with open(options.uid_file, "r") as f:
                     line = f.readline()
                     while line:
                         # prepare task
@@ -111,8 +140,8 @@ if __name__ == '__main__':
 
         # execute list
         loginParams = {}
-        if options.credentialFile:
-            loginParams['credentialFile'] = options.credentialFile
+        if options.login_file:
+            loginParams['credentialFile'] = options.login_file
         login = tasks.LoginToVf(driver, **loginParams)
         login.execute()
 
